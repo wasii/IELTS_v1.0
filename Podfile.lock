@@ -1,0 +1,42 @@
+PODS:
+  - Alamofire (4.8.2)
+  - AudioKit (4.7):
+    - AudioKit/Core (= 4.7)
+    - AudioKit/UI (= 4.7)
+  - AudioKit/Core (4.7)
+  - AudioKit/UI (4.7):
+    - AudioKit/Core
+  - PieCharts (0.0.7)
+  - PKHUD (5.2.1)
+  - SwiftSiriWaveformView (2.4.0)
+  - SwiftyJSON (4.3.0)
+
+DEPENDENCIES:
+  - Alamofire (~> 4.5)
+  - AudioKit
+  - AudioKit/Core
+  - PieCharts
+  - PKHUD (~> 5.0)
+  - SwiftSiriWaveformView
+  - SwiftyJSON
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - AudioKit
+    - PieCharts
+    - PKHUD
+    - SwiftSiriWaveformView
+    - SwiftyJSON
+
+SPEC CHECKSUMS:
+  Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
+  AudioKit: 8b3c883fb6023d1b30764e40372991c9c66aa022
+  PieCharts: 30e50dfa7dc19e5b84e9878d32089673ef5d0453
+  PKHUD: 4e6162c4c39ac367c6934e9855c6b4762ee16256
+  SwiftSiriWaveformView: baa04ed2089e854af00ea54c38a7700ca43d7ae0
+  SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
+
+PODFILE CHECKSUM: 09a5f955c610e3831ef4c57b6ed35a52eabead22
+
+COCOAPODS: 1.5.3
