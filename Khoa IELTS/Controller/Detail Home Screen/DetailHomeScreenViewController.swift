@@ -39,9 +39,11 @@ class DetailHomeScreenViewController: UIViewController {
                          "title" : "Why don't we talk about the people in your hometown?" as AnyObject,
                          "selected" : false as AnyObject,
                          "content" : [
-                                "Are the people friendly? In what say?",
-                                "Do the people often eat in restaurants? Why?",
-                                "Is there much disagreement among them? Why?"
+                            "Hello",
+                            "Hello"
+//                                "Are the people friendly? In what say?",
+//                                "Do the people often eat in restaurants? Why?",
+//                                "Is there much disagreement among them? Why?"
                             ] as AnyObject
                         ],
                         [
@@ -57,6 +59,7 @@ class DetailHomeScreenViewController: UIViewController {
                          "title" : "Let's talk about stress." as AnyObject,
                          "selected" : false as AnyObject,
                          "content" : [
+//                            "Hello"
                                 "Do you sometimes feel stress? In what situations?",
                                 "What problems does this stress cause?",
                                 "What do you do when you are very stressed?",

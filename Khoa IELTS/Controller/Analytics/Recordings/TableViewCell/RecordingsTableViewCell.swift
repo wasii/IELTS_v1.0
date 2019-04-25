@@ -14,6 +14,7 @@ class RecordingsTableViewCell: UITableViewCell {
     @IBOutlet weak var subHeadingLabel: UILabel!
     @IBOutlet weak var durationLabel: UILabel!
     @IBOutlet weak var playPauseBtn: UIButton!
+    @IBOutlet weak var creationDate: UILabel!
     
     var whiteRoundedView = UIView()
     var loadingBar = UIView()

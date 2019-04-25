@@ -110,13 +110,18 @@ class RecordingsViewController: UIViewController {
                         let audioAsset = AVURLAsset.init(url: audioUrl!, options: nil)
                         let duration = audioAsset.duration
                         let durationInSeconds = Int(CMTimeGetSeconds(duration))
+
+                        let file : URL = URL(string: directoryString)!
+                        
+                        let attrs = try FileManager.default.attributesOfItem(atPath: file.path)
+                        let creationDate = attrs[.creationDate] as? Date
                         
                         let dictionary = ["fileName" : subFolderNameDirectoriesWithOutExtension[j],
                                           "duration" : durationInSeconds,
                                           "location" : audioUrl!,
-                                          "isPlaying" : false as AnyObject] as [String : AnyObject]
+                                          "isPlaying" : false as AnyObject,
+                                          "creationDate": creationDate as Any] as [String : AnyObject]
                         fileNamesInFolders.append(dictionary as AnyObject)
-                        
                         j = j + 1
                     }
                     temporaryDictionary = ["folderName" : subdirNamesStr[i],
@@ -133,6 +138,14 @@ class RecordingsViewController: UIViewController {
         } catch let error as NSError {
             print(error.localizedDescription)
         }
+    }
+    
+    func timeString(time: TimeInterval) -> String {
+        let hours = Int(time) / 36000
+        let minutes = Int(time) / 60 % 60
+        let seconds = Int(time) % 60
+        
+        return String(format: "%02i:%02i", minutes, seconds)
     }
 }
 
@@ -151,43 +164,53 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
         let data = sections[indexPath.section].files[indexPath.row] as! [String: AnyObject]
         cell.headingLabel.text = sections[indexPath.section].folderName
         cell.subHeadingLabel.text = data["fileName"] as? String
-        if(data["duration"] as? Int != 20){
-            cellduration = "00:0"
-        }
-        let duration = data["duration"] as? Int
         
-        if(duration! > 20) {
-            if(duration! < 60) {
-                let timer = duration! - 60
-                if timer >= 10 {
-                    cellduration = "01:"
-                } else {
-                    cellduration = "01:0"
-                }
-                
-            } else {
-                cellduration = "00:"
-            }
-        }
+        let date = data["creationDate"] as! Date
+        let dateStr = (String(describing: date))
+        
+//        cell.creationDate.text = myString
+        let finalDate = dateStr.index(dateStr.endIndex, offsetBy: -6)
+        let truncated = dateStr.substring(to: finalDate)
+        cell.creationDate.text = "\(truncated)"
+//        if(data["duration"] as? Int != 20){
+//            cellduration = "00:0"
+//        }
+        let duration = data["duration"] as? Int
+//
+//        if(duration! > 20) {
+//            if(duration! < 60) {
+//                let timer = duration! - 60
+//                if timer >= 10 {
+//                    cellduration = "01:"
+//                } else {
+//                    cellduration = "01:0"
+//                }
+//
+//            } else {
+//                cellduration = "00:"
+//            }
+//        }
         
         if (data["isPlaying"] as! Bool) {
             self.recordingCell.loadingBar.frame.size.width = CGFloat(pausedAudioBar)
             self.recordingCell.imageViewFrame.layer.position.x =  CGFloat(pausedAudioBar + 7)
             self.recordingCellLoadingBarWidth = pausedAudioBar
             
-            if(duration! == 120) {
-                self.recordingCell.durationLabel.text = "02:00"
-            } else {
-                self.recordingCell.durationLabel.text = "\(cellduration)\(self.duration)"//"00:\(self.duration)"
-            }
+//            if(duration! == 120) {
+//                self.recordingCell.durationLabel.text = "02:00"
+//            } else {
+//                self.recordingCell.durationLabel.text = "\(cellduration)\(self.duration)"//"00:\(self.duration)"
+//            }
+            cell.durationLabel.text = timeString(time: TimeInterval(duration!))
+//            cell.recordingCell.durationLabel.text = timeString(time: TimeInterval(duration!))
             
         } else {
             cell.playPauseBtn.isSelected = false
             cell.loadingBar.frame.size.width = 0.0
             cell.imageViewFrame.layer.position.x = 7.0
             cell.playPauseBtn.setImage(self.playBtn, for: .normal)
-            
-            cell.durationLabel.text = cellduration+"\(data["duration"] as? Int ?? 0)"
+            let temp = timeString(time: TimeInterval(duration!))
+            cell.durationLabel.text = timeString(time: TimeInterval(duration!))
         }
         cell.playPauseBtn.tag = indexPath.row
         cell.playPauseBtn.addTarget(self, action: #selector(playCurrentRecording(_:)), for: .touchUpInside)
@@ -198,6 +221,37 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        switch editingStyle {
+        case .delete:
+            let data = sections[indexPath.section].files[indexPath.row] as! [String: AnyObject]
+            let fileLocation = data["location"] as! URL
+            
+            let fileManager = FileManager.default
+            
+            do {
+                try fileManager.removeItem(at: fileLocation)
+//                sections.removeAll()
+//                self.getFoldersName()
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
+                    self.sections.remove(at: indexPath.row)
+                    self.tableView.deleteRows(at: [indexPath], with: .bottom)
+                    print("Deleted: \(fileLocation)")
+                }
+            } catch let error as NSError {
+                print(error.localizedDescription)
+            }
+            break
+        case .insert:
+            break
+        case .none:
+            break
+        }
     }
     
     @objc func playCurrentRecording(_ sender:UIButton){
@@ -316,7 +370,7 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
                 self.loadingBar = Double(self.recordingCell.loadingBar.frame.size.width)
                 self.recordingCellLoadingBarWidth = Double(self.recordingCell.loadingBar.frame.size.width)
                 
-                self.recordingCell.durationLabel.text? = "00:0\(self.tempDuration)"
+                self.recordingCell.durationLabel.text? = "00:\(self.tempDuration)"
                 
             }, completion: nil)
         } else {
@@ -324,15 +378,20 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
                 self.recordingCell.loadingBar.frame.size.width = self.recordingCell.loadingBar.frame.size.width + CGFloat(self.loadingBar)
                 self.recordingCell.imageViewFrame.layer.position.x =  self.recordingCell.loadingBar.frame.size.width + 7
                 self.recordingCellLoadingBarWidth = Double(self.recordingCell.loadingBar.frame.size.width)
-                self.recordingCell.durationLabel.text? = "00:0\(self.tempDuration)"
+                if self.tempDuration < 10 {
+                    self.recordingCell.durationLabel.text? = "00:0\(self.tempDuration)"
+                } else {
+                    self.recordingCell.durationLabel.text? = "00:\(self.tempDuration)"
+                }
             }, completion: nil)
         }
         
-        if Double(self.recordingCell.whiteRoundedView.frame.size.width) == Double(self.recordingCell.loadingBar.frame.size.width) {
+        let whiteRoundedFrame = Double(self.recordingCell.whiteRoundedView.frame.size.width)
+        let loadingBarFrame   = Double(self.recordingCell.loadingBar.frame.size.width).rounded()
+        if whiteRoundedFrame == loadingBarFrame {
             UIView.animate(withDuration: 2, animations: {
                 self.recordingCell.imageViewFrame.layer.position.x =  self.recordingCell.loadingBar.frame.size.width - 7
             }, completion: nil)
-            
             terminateTimer()
             loadingBar = 0.0
             self.recordingCell.durationLabel.text? = "00:00"
