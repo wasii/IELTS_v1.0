@@ -6,6 +6,8 @@ PODS:
   - AudioKit/Core (4.7)
   - AudioKit/UI (4.7):
     - AudioKit/Core
+  - Firebase (5.20.1):
+    - Firebase/Core (= 5.20.1)
   - Firebase/Auth (5.20.1):
     - Firebase/CoreOnly
     - FirebaseAuth (= 5.4.2)
@@ -83,6 +85,7 @@ PODS:
   - nanopb/encode (0.3.901)
   - PieCharts (0.0.7)
   - PKHUD (5.2.1)
+  - SVProgressHUD (2.2.5)
   - SwiftSiriWaveformView (2.4.0)
   - SwiftyJSON (4.3.0)
 
@@ -90,12 +93,14 @@ DEPENDENCIES:
   - Alamofire (~> 4.5)
   - AudioKit
   - AudioKit/Core
+  - Firebase
   - Firebase/Auth
   - Firebase/Core
   - Firebase/Database
   - Firebase/Storage
   - PieCharts
   - PKHUD (~> 5.0)
+  - SVProgressHUD
   - SwiftSiriWaveformView
   - SwiftyJSON
 
@@ -118,6 +123,7 @@ SPEC REPOS:
     - nanopb
     - PieCharts
     - PKHUD
+    - SVProgressHUD
     - SwiftSiriWaveformView
     - SwiftyJSON
 
@@ -139,9 +145,10 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   PieCharts: 30e50dfa7dc19e5b84e9878d32089673ef5d0453
   PKHUD: 4e6162c4c39ac367c6934e9855c6b4762ee16256
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   SwiftSiriWaveformView: baa04ed2089e854af00ea54c38a7700ca43d7ae0
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
 
-PODFILE CHECKSUM: c05b4113acf53ff8d78986c8c80ffe90c218fdfa
+PODFILE CHECKSUM: b9f0459f77f4ce3147da7b0fc11954a8362aee56
 
 COCOAPODS: 1.5.3

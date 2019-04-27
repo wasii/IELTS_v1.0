@@ -13,8 +13,9 @@ pod 'SwiftyJSON'
 pod 'PKHUD', '~> 5.0'
 pod 'AudioKit'
 pod 'AudioKit/Core'
-
+pod 'SVProgressHUD'
 #FIREBASE Database
+pod 'Firebase'
 pod 'Firebase/Core'
 pod 'Firebase/Auth'
 pod 'Firebase/Database'
