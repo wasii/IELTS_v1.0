@@ -32,7 +32,7 @@ class RecordingsTableViewCell: UITableViewCell {
 
 extension RecordingsTableViewCell {
     func setupCell() {
-        whiteRoundedView = UIView(frame: CGRect(x: 20, y: 5, width: self.contentView.frame.width - 40, height: 100))
+        whiteRoundedView = UIView(frame: CGRect(x: 20, y: 5, width: UIScreen.main.bounds.size.width - 40, height: 100))
         whiteRoundedView.layer.backgroundColor = UIColor.white.cgColor
         whiteRoundedView.layer.masksToBounds = false
         whiteRoundedView.layer.cornerRadius = 2.0

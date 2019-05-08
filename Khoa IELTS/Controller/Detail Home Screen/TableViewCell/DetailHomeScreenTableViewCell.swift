@@ -21,7 +21,7 @@ class DetailHomeScreenTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        let buttonFrame = CGRect(x: self.contentView.frame.width - 60, y: 5, width: 15, height: 25)
+        let buttonFrame = CGRect(x: UIScreen.main.bounds.size.width - 60, y: 5, width: 15, height: 25)
         playButton.frame = buttonFrame
         self.contentView.addSubview(playButton)
     }

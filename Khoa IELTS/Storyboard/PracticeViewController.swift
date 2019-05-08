@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import FirebaseDatabase
 
 @available(iOS 11.0, *)
 class PracticeViewController: UIViewController {
@@ -24,7 +24,7 @@ class PracticeViewController: UIViewController {
     
     var wordCounter = 0
     var vocabularyCount = 0
-    
+    var ref : DatabaseReference!
     @IBOutlet weak var final: UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,6 +51,10 @@ class PracticeViewController: UIViewController {
         }
         
         print("Total Words: \(finalString.count) \nNumber of Vocabulary: \(vocabularyCount) \nNumber of Repetition of Words: \(wordCounter)\nRepetition of Words: \(wordCount)")
+        
+        
+        
+        ref = FirebaseInitialization.databaseReference()
     }
     
     

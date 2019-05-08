@@ -9,7 +9,8 @@
 import UIKit
 import PieCharts
 class ReportViewController: UIViewController {
-
+    @IBOutlet var mainView: UIView!
+    
     @IBOutlet weak var chartView: PieChart!
     @IBOutlet weak var frScaling: UIView!
     @IBOutlet weak var grScaling: UIView!
@@ -28,6 +29,14 @@ class ReportViewController: UIViewController {
     @IBOutlet weak var prLabel: UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+//        mainView.frame.size.width = UIScreen.main.bounds.size.width
+        print(mainView.frame.size.width)
+    }
+    override func viewDidLayoutSubviews() {
+        
+        mainView.frame.size.width = UIScreen.main.bounds.size.width
     }
     func setupViews() {
         var frband = UserDefaults.standard.string(forKey: "FRBand")

@@ -15,16 +15,17 @@ class HomeScreenTableViewCell: UITableViewCell {
     var playButton = UIButton()
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+        let screenWidth = UIScreen.main.bounds.size.width
+//        let cgWidth = CGFloat(width)
         // Initialization code
-        let whiteRoundedView : UIView = UIView(frame: CGRect(x: 20, y: 8, width: self.contentView.frame.width - 40, height: 65))
+        let whiteRoundedView : UIView = UIView(frame: CGRect(x: 20, y: 8, width: screenWidth - 40.0, height: 65))
         whiteRoundedView.layer.backgroundColor = UIColor.white.cgColor
         whiteRoundedView.layer.masksToBounds = false
         whiteRoundedView.layer.cornerRadius = 2.0
         whiteRoundedView.layer.shadowOffset = CGSize(width: -1, height: 1)
         whiteRoundedView.layer.shadowOpacity = 0.2
         
-        let buttonFrame = CGRect(x: self.contentView.frame.width - 60, y: (self.contentView.frame.size.height/2)-8, width: 25, height: 15)
+        let buttonFrame = CGRect(x: screenWidth - 60, y: (self.contentView.frame.size.height/2)-8, width: 25, height: 15)
         playButton.frame = buttonFrame
         playButton.setImage(UIImage(named: "arrow"), for: .normal)
         self.contentView.addSubview(playButton)

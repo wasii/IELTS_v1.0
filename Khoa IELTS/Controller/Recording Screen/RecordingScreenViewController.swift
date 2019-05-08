@@ -12,8 +12,17 @@ import SwiftSiriWaveformView
 import Speech
 import PKHUD
 import AudioKit
-
+import FirebaseStorage
+import FirebaseDatabase
 class RecordingScreenViewController: UIViewController, AVAudioRecorderDelegate, AVSpeechSynthesizerDelegate {
+    
+    //06-05-2019
+    var uploadToFirebaseDictionary = [String : AnyObject]()
+    var uploadToFirebaseArray = Array<String>()
+    var audioReference : StorageReference {
+        return Storage.storage().reference().child("audios")
+    }
+    //END 06-05-2019
     
     var part2 = Bool()
     var part2Initialize = Bool()
@@ -556,6 +565,7 @@ extension RecordingScreenViewController : SFSpeechRecognizerDelegate, SFSpeechRe
         let directoryName = urls.map { $0.lastPathComponent }
         let fileName : NSString = directoryName[textToSpeechCounter] as NSString
         let frequencies = self.noteFrequencies[textToSpeechCounter]
+        
         textToSpeech(fileName.deletingPathExtension, urls[textToSpeechCounter], frequencies)
     }
 //MARK: Converting Audio into Text
@@ -577,6 +587,7 @@ extension RecordingScreenViewController : SFSpeechRecognizerDelegate, SFSpeechRe
                     do {
                         let path = self.getAudioDirectory().appendingPathComponent(self.data["title"] as! String)
                         try fileManager.removeItem(at: path)
+                        self.uploadToFirebaseArray.removeAll()
                     }
                     catch let error as NSError {
                         print("Ooops! Something went wrong: \(error)")
@@ -589,7 +600,6 @@ extension RecordingScreenViewController : SFSpeechRecognizerDelegate, SFSpeechRe
             }
             
             if (result?.isFinal)! {
-                
                 self.textToSpeechCounter = self.textToSpeechCounter + 1
 
                 print(fileName+": "+(result?.bestTranscription.formattedString)!)
@@ -601,10 +611,11 @@ extension RecordingScreenViewController : SFSpeechRecognizerDelegate, SFSpeechRe
                     self.categorizedResult()
                     return
                 }
-                if(self.textToSpeechCounter == self.topicCount) {
-//Generating Result
+                if(self.textToSpeechCounter == self.urls.count) {
+//                    self.uploadToFirebase(fileName, true)
                     self.categorizedResult()
                 } else {
+//                    self.uploadToFirebase(fileName, false)
                     self.extractFilenameAndPath()
                 }
             }
@@ -621,19 +632,61 @@ extension RecordingScreenViewController : SFSpeechRecognizerDelegate, SFSpeechRe
 //            print("Device doesn't support speech recognition")
 //        }
     }
-}
+    func uploadToFirebase(_ fileName: String, _ lastFile: Bool) {
+        let file = NSData(contentsOf: self.urls[textToSpeechCounter-1])
+        if (file != nil) {
+            var finalurl = ""
+            let storage = Storage.storage()
+            let metadata = StorageMetadata()
+            metadata.contentType = "audio/aac"
+            
+            
+            let userId = "-kLjddla34rKdld"
+            let uploadRef = storage.reference().child("records/\(userId)/\(fileName).aac")
 
-//func Logout(completionHandler:@escaping (Bool) -> ()) {
-//    backendless?.userService.logout(
-//        { user in
-//            print("User logged out.")
-//            completionHandler(true)
-//    },
-//        error: { fault in
-//            print("Server reported an error: \(fault)")
-//            completionHandler(false)
-//    })
-//}
+            let localUrl = self.urls[0]
+            uploadRef.putFile(from: localUrl, metadata: nil) { metadata, error in
+                guard let metadata = metadata else {
+                    return
+                }
+                // Metadata contains file metadata such as size, content-type.
+                let size = metadata.size
+                // You can also access to download URL after upload.
+                uploadRef.downloadURL { (url, error) in
+                    guard let downloadURL = url else {
+                        return
+                    }
+                    
+                    finalurl = downloadURL.absoluteString
+                    self.uploadToFirebaseDictionary[fileName] = finalurl as AnyObject
+                    if lastFile {
+                        let ref = Database.database().reference()
+                        ref.child("Recordings").childByAutoId().setValue([
+                            "userId" : userId,
+                            "title" : self.data["topicTitle"] as? String as Any,
+                            "content" : self.uploadToFirebaseDictionary,
+                            "createTime" : Date().timeIntervalSince1970,
+                            "size" : size
+                            ] as [String : Any], withCompletionBlock: { (error, reference) in
+                                if error != nil {
+                                   print(error?.localizedDescription)
+                                } else {
+                                    let fileManager = FileManager.default
+                                    do {
+                                        let path = self.getAudioDirectory().appendingPathComponent(self.data["title"] as! String)
+                                        try fileManager.removeItem(at: path)
+                                    }
+                                    catch let error as NSError {
+                                        print("Ooops! Something went wrong: \(error)")
+                                    }
+                                }
+                        })
+                    }
+                }
+            }
+        }
+    }
+}
 
 //MARK: Generating Result..
 extension RecordingScreenViewController {

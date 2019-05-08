@@ -7,67 +7,65 @@
 //
 
 import UIKit
+import FirebaseDatabase
+import SVProgressHUD
+
+
 
 class HomeScreenViewController: UIViewController {
-    let menu = [
-        [
-            "title" : "Personal Matters & Hobbies",
-            "image" : "q1"
-        ],
-        [
-            "title" : "Technology",
-            "image" : "q3"
-        ],
-        [
-            "title" : "Environment, Animal & Nature",
-            "image" : "q7"
-        ],
-        [
-            "title" : "Travel & Holiday",
-            "image" : "q2"
-        ],
-        [
-            "title" : "Home, Hometown",
-            "image" : "q4"
-        ],
-        [
-            "title" : "Language, Study & Education",
-            "image" : "q5"
-        ],
-        [
-            "title" : "Health",
-            "image" : "q6"
-        ],
-        [
-            "title" : "Food",
-            "image" : "q1"
-        ],
-        [
-            "title" : "Media & Entertainment",
-            "image" : "q7"
-        ],
-        [
-            "title" : "Transport",
-            "image" : "q3"
-        ],
-        [
-            "title" : "History, Art & Culture",
-            "image" : "q4"
-        ],
-        [
-            "title" : "Society & Community",
-            "image" : "q2"
-        ]
-    ]
+    var menu = [Questions]()
+    var sections = [Sections]()
+    var ref : DatabaseReference!
     
     @IBOutlet weak var contentView: UIView!
     @IBOutlet weak var tableView: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
+        SVProgressHUD.show(withStatus: "Loading")
         tableView.rowHeight = 80
+        ref = Database.database().reference()
+        UserDefaults.standard.set(self.tableView.frame.size.width, forKey: "tableViewWidth")
+        getData()
     }
     @IBAction func popBtn(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    func getData() {
+        ref.child("Questions").observeSingleEvent(of: .value) { (snapshot) in
+            let JSON = snapshot.value as! [String: AnyObject]
+            for index in JSON {
+                let maintitle = index.key
+                var image = ""
+                
+                let content = index.value
+                
+                for parts in content as! [String:AnyObject] {
+                    if parts.key == "image" {
+                        image = parts.value as! String
+                    } else {
+                        var sectionarray = Array<Dictionary<String, AnyObject>>()
+                        var sectiondictionary = Dictionary<String, AnyObject>()
+                        let partkey = parts.key // Part - 1
+                        let partcontent = parts.value as! [String:AnyObject]
+                        
+                        for p in partcontent {
+                            sectiondictionary["title"] = p.key as AnyObject
+                            sectiondictionary["selected"] = false as AnyObject
+                            sectiondictionary["content"] = p.value
+                            sectionarray.append(sectiondictionary)
+                        }
+                        self.sections.append(Sections(image: image, title: partkey, items: sectionarray, expanded: false))
+                    }
+                }
+                self.menu.append(Questions(maintitle: maintitle, image: image, section: self.sections))
+                self.sections.removeAll()
+            }
+            self.tableView.reloadData()
+            DispatchQueue.main.async {
+                SVProgressHUD.dismiss()
+            }
+        }
     }
 }
 
@@ -82,17 +80,21 @@ extension HomeScreenViewController : UITableViewDataSource {
         
         
         let data = menu[indexPath.row]
-        cell.initializeCell(data["title"]!, data["image"]!)
+        cell.initializeCell(data.maintitle, data.image)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
         let data = menu[indexPath.row]
-        
+
         tableView.deselectRow(at: indexPath, animated: true)
         
         let secondViewController = self.storyboard?.instantiateViewController(withIdentifier: "DetailHomeScreen") as! DetailHomeScreenViewController
-        secondViewController.data = data
+        let dictionary = ["title":data.maintitle,
+                          "image":data.image]
+        secondViewController.sections = self.menu[indexPath.row].section
+        secondViewController.data = dictionary as! [String : String]
         
         self.navigationController!.pushViewController(secondViewController, animated: true)
     }

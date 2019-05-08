@@ -9,9 +9,15 @@
 import Foundation
 import FirebaseDatabase
 
-//class Questions: NSObject {
-//    var part : String
-//    var heading : String
-//    var questions : [String]
-//    var image : String
-//}
+struct Questions {
+    var maintitle : String!
+    var image : String!
+    var section : [Sections]
+    
+    
+    init (maintitle: String, image: String, section: [Sections]) {
+        self.maintitle = maintitle
+        self.image = image
+        self.section = section
+    }
+}

@@ -23,84 +23,13 @@ class DetailHomeScreenViewController: UIViewController {
     var selectedIndex = [String]()
     var data = [String: String]()
     var expandedSection = -1
-    
+    var sendertag = 0
     var sections = [Sections]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.isHidden = true
-        
-        sections = [
-            Sections(image: data["image"]!,
-                     title: "Part - 1",
-                     items: [
-                        [
-                         "title" : "Why don't we talk about the people in your hometown?" as AnyObject,
-                         "selected" : false as AnyObject,
-                         "content" : [
-                            "Hello",
-                            "Hello"
-//                                "Are the people friendly? In what say?",
-//                                "Do the people often eat in restaurants? Why?",
-//                                "Is there much disagreement among them? Why?"
-                            ] as AnyObject
-                        ],
-                        [
-                         "title": "Let's move on to talk about exercise." as AnyObject,
-                         "selected" : false as AnyObject,
-                         "content" : [
-                                "How do you often exercise? Why?",
-                                "Are there difficulties when exercising? What?",
-                                "What are the best forms of exercise?"
-                            ] as AnyObject
-                        ],
-                        [
-                         "title" : "Let's talk about stress." as AnyObject,
-                         "selected" : false as AnyObject,
-                         "content" : [
-//                            "Hello"
-                                "Do you sometimes feel stress? In what situations?",
-                                "What problems does this stress cause?",
-                                "What do you do when you are very stressed?",
-                                "Do you think life is generally stressful?"
-                            ] as AnyObject
-                        ]
-                    ],
-                    expanded: false
-            ),
-            Sections(image: data["image"]!,
-                     title: "Part - 2",
-                     items: [
-                        [
-                            "title" : "Describe a time when you achieved something important." as AnyObject,
-                            "selected" : false as AnyObject,
-                            "content" : [
-                                    "where and when this happed",
-                                    "how you prepared for this time",
-                                    "how you felt about it"
-                            ] as AnyObject
-                        ]
-                    ],
-                    expanded: false
-            ),
-            Sections(image: data["image"]!,
-                     title: "Part - 3",
-                     items: [
-                        [
-                            "title" : "Individual Wealth" as AnyObject,
-                            "selected" : false as AnyObject,
-                            "content" : [
-                                    "Are there many wealthy people in your country?",
-                                    "How did they become so wealthy?",
-                                    "If you were wealthy, how would your life change?",
-                                    "Can wealth sometimes lead to unhapiness? How?"
-                            ] as AnyObject
-                        ]
-                    ],
-                    expanded: false
-            )
-        ]
         
         self.mainHeadingTitle.text = data["title"]
         
@@ -118,8 +47,6 @@ class DetailHomeScreenViewController: UIViewController {
         var topics = [String]()
         var i = 0
         
-//        let totalRows = self.tableView.numberOfRows(inSection: (indexPath?.section)!)
-        
         for index in 0..<(sections[(indexPath?.section)!].items[0]["content"] as! [AnyObject]).count {
             let currentTitle = ((sections[(indexPath?.section)!].items[0]["content"]) as! [AnyObject])[index] as! String
             topics.append(currentTitle)
@@ -128,23 +55,17 @@ class DetailHomeScreenViewController: UIViewController {
         
         let recording = storyboard?.instantiateViewController(withIdentifier: "RecordingScreen") as! RecordingScreenViewController
         
-//        if selectedIndex.contains("Select All") {
-//            let tempIndex = selectedIndex.firstIndex(of: "Select All")
-//            selectedIndex.remove(at: tempIndex!)
-//        }
-        
-        
         if(!selectedIndex.isEmpty){
             recording.data = ["title" : data["title"]!,
                               "part" : sections[(indexPath?.section)!].title,
                               "topics" : selectedIndex,
-                              "topicTitle" : sections[(indexPath?.section)!].items[sender.tag]["title"] as! String
+                              "topicTitle" : sections[(indexPath?.section)!].items[sendertag]["title"] as! String
                 ] as [String:AnyObject]
         } else {
             recording.data = ["title" : data["title"]!,
                               "part" : sections[(indexPath?.section)!].title,
                               "topics" : topics,
-                              "topicTitle" : sections[(indexPath?.section)!].items[sender.tag]["title"] as! String
+                              "topicTitle" : sections[(indexPath?.section)!].items[sendertag]["title"] as! String
                 ] as [String : AnyObject] //information
         }
         self.navigationController?.pushViewController(recording, animated: true)
@@ -279,6 +200,7 @@ extension DetailHomeScreenViewController : UITableViewDataSource, UITableViewDel
         sender.isSelected = !sender.isSelected
         if sender.isSelected {
             selectedIndex.removeAll()
+            sendertag = sender.tag
             for index in 0..<(sections[(indexPath?.section)!].items[sender.tag]["content"] as! [AnyObject]).count {
                 let currentTitle = ((sections[(indexPath?.section)!].items[sender.tag]["content"]) as! [AnyObject])[index] as! String
                 selectedIndex.append(currentTitle)
@@ -287,7 +209,7 @@ extension DetailHomeScreenViewController : UITableViewDataSource, UITableViewDel
             self.tableView.reloadRows(at: [IndexPath(row: sender.tag, section: (indexPath?.section)!)], with: .none)
             print("Selected Topics: \(selectedIndex)")
         } else {
-            
+            sendertag = sender.tag
             for index in 0..<(sections[(indexPath?.section)!].items[sender.tag]["content"] as! [AnyObject]).count {
                 let currentTitle = ((sections[(indexPath?.section)!].items[sender.tag]["content"]) as! [AnyObject])[index] as! String
                 if(selectedIndex.contains(currentTitle)) {

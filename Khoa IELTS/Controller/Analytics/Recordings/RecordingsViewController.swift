@@ -8,6 +8,8 @@
 
 import UIKit
 import AVFoundation
+import FirebaseDatabase
+import SVProgressHUD
 
 struct RecordingSections {
     var folderName = String()
@@ -40,53 +42,69 @@ class RecordingsViewController: UIViewController {
     var sections = [RecordingSections]()
     @IBOutlet weak var tableView: UITableView!
     
-    var savedData = Array<Dictionary<String,AnyObject>>()// NSMutableArray()
-    var dummydata = [
-        [
-            "title" : "Culture",
-            "subTitle" : "Your Memories & Food",
-            "duration" : "02:15",
-        ],
-        [
-            "title" : "Travel",
-            "subTitle" : "Lorem Ipsum dolor sit amet",
-            "duration" : "02:15",
-        ],
-        [
-            "title" : "Environment",
-            "subTitle" : "Lorem Ipsum dolor sit amet",
-            "duration" : "02:15",
-        ],
-        [
-            "title" : "Technology",
-            "subTitle" : "Lorem Ipsum dolor sit amet",
-            "duration" : "02:15",
-        ],
-        [
-            "title" : "Medical",
-            "subTitle" : "Lorem Ipsum dolor sit amet",
-            "duration" : "02:15",
-        ]
-    ]
-    
+    var savedData = Array<Dictionary<String,AnyObject>>()
+    var ref = Database.database().reference()
     override func viewDidLoad() {
         super.viewDidLoad()
         getFoldersName()
         self.tableView.rowHeight = 115
     }
-    
-    func getFoldersName() {
-        
+    func getFirebaseData() {
+        SVProgressHUD.show(withStatus: "Loading")
         var temporaryDictionary = [String: AnyObject]()
         var fileNamesInFolders = [AnyObject]()
-        
+        ref.child("Recordings").observeSingleEvent(of: .value) { (snapshot) in
+            if let JSON = snapshot.value as? [String: AnyObject] {
+            for index in JSON {
+                
+                let content = index.value
+                for parts in content as! [String:AnyObject] {
+                    let title = content["title"] as! String
+                    if parts.key == "content" {
+                        let partcontent = parts.value as! [String:AnyObject]
+                        for p in partcontent {
+                            let directoryString = p.value as! String
+                            let audioUrl = URL(string: directoryString)
+                            let audioAsset = AVURLAsset.init(url: audioUrl!, options: nil)
+                            let duration = audioAsset.duration
+                            let durationInSeconds = Int(CMTimeGetSeconds(duration))
+                            
+                            let file : URL = URL(string: directoryString)!
+                            let dictionary = ["fileName" : p.key,
+                                              "duration" : durationInSeconds,
+                                              "location" : audioUrl!,
+                                              "isPlaying" : false as AnyObject,
+                                              "creationDate": content["createTime"]] as [String : AnyObject]
+                            fileNamesInFolders.append(dictionary as AnyObject)
+                        }
+                        temporaryDictionary = ["folderName" : title,
+                                               "files": fileNamesInFolders] as [String : AnyObject]
+                        if self.sections.isEmpty {
+                            self.sections = [RecordingSections(folderName: title, files: fileNamesInFolders)]
+                        } else {
+                           self.sections = self.sections + [RecordingSections(folderName: title, files: fileNamesInFolders)]
+                        }
+                    }
+                }
+            }
+            
+            self.tableView.reloadData()
+        }
+            SVProgressHUD.dismiss()
+        }
+    }
+    func getFoldersName() {
+
+        var temporaryDictionary = [String: AnyObject]()
+        var fileNamesInFolders = [AnyObject]()
+
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let documentsDirectory = paths[0]
         do {
             let directoryContents = try FileManager.default.contentsOfDirectory(at: documentsDirectory, includingPropertiesForKeys: nil, options: [])
-            
+
             let subdirs = directoryContents.filter{ $0.hasDirectoryPath }
-            
+
             var i = 0
             for folderName in subdirs {
                 let subdirNamesStr = subdirs.map{ $0.lastPathComponent }
@@ -95,16 +113,16 @@ class RecordingsViewController: UIViewController {
                 for directories in subFolderName {
                     fileNamesInFolders.removeAll()
                     let subFolderNameDirectoriesFiles = try FileManager.default.contentsOfDirectory(at: directories, includingPropertiesForKeys: nil, options: [])
-                    
+
                     let subFolderNameDirectoriesWithExtension = subFolderNameDirectoriesFiles.map{$0.deletingPathExtension()}
                     let subFolderNameDirectoriesWithOutExtension = subFolderNameDirectoriesWithExtension.map{$0.lastPathComponent}
-                    
+
                     let subFolderNameDirectoriesFilesNames = subFolderNameDirectoriesFiles.map{$0.lastPathComponent}
-                    
+
                     var j = 0
                     for subFolderNameDirectoriesFilesNamesDuration in subFolderNameDirectoriesFilesNames {
                         filesCount = filesCount + 1
-                        
+
                         let directoryString = directories.appendingPathComponent(subFolderNameDirectoriesFilesNamesDuration).absoluteString
                         let audioUrl = URL(string: directoryString)
                         let audioAsset = AVURLAsset.init(url: audioUrl!, options: nil)
@@ -112,10 +130,10 @@ class RecordingsViewController: UIViewController {
                         let durationInSeconds = Int(CMTimeGetSeconds(duration))
 
                         let file : URL = URL(string: directoryString)!
-                        
+
                         let attrs = try FileManager.default.attributesOfItem(atPath: file.path)
                         let creationDate = attrs[.creationDate] as? Date
-                        
+
                         let dictionary = ["fileName" : subFolderNameDirectoriesWithOutExtension[j],
                                           "duration" : durationInSeconds,
                                           "location" : audioUrl!,
@@ -165,10 +183,13 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
         cell.headingLabel.text = sections[indexPath.section].folderName
         cell.subHeadingLabel.text = data["fileName"] as? String
         
+        
+        
+//        let date = Date(timeIntervalSince1970: data["creationDate"] as! TimeInterval)
         let date = data["creationDate"] as! Date
         let dateStr = (String(describing: date))
         
-//        cell.creationDate.text = myString
+        //        cell.creationDate.text = myString
         let finalDate = dateStr.index(dateStr.endIndex, offsetBy: -6)
         let truncated = dateStr.substring(to: finalDate)
         cell.creationDate.text = "\(truncated)"
@@ -195,12 +216,7 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
             self.recordingCell.loadingBar.frame.size.width = CGFloat(pausedAudioBar)
             self.recordingCell.imageViewFrame.layer.position.x =  CGFloat(pausedAudioBar + 7)
             self.recordingCellLoadingBarWidth = pausedAudioBar
-            
-//            if(duration! == 120) {
-//                self.recordingCell.durationLabel.text = "02:00"
-//            } else {
-//                self.recordingCell.durationLabel.text = "\(cellduration)\(self.duration)"//"00:\(self.duration)"
-//            }
+
             cell.durationLabel.text = timeString(time: TimeInterval(duration!))
 //            cell.recordingCell.durationLabel.text = timeString(time: TimeInterval(duration!))
             
@@ -236,10 +252,9 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
             
             do {
                 try fileManager.removeItem(at: fileLocation)
-//                sections.removeAll()
-//                self.getFoldersName()
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
-                    self.sections.remove(at: indexPath.row)
+                sections.removeAll()
+                self.getFoldersName()
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
                     self.tableView.deleteRows(at: [indexPath], with: .bottom)
                     print("Deleted: \(fileLocation)")
                 }
@@ -302,8 +317,8 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
                 sound.numberOfLoops = 0
                 self.tableView.isScrollEnabled = false
                 animateViewTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(animateView(_:)), userInfo: nil, repeats: true)
-            } catch {
-                
+            } catch let error as NSError {
+                print(error.localizedDescription)
             }
         } else {
             recordingCell = self.tableView.cellForRow(at: indexPath!) as! RecordingsTableViewCell
@@ -370,7 +385,7 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
                 self.loadingBar = Double(self.recordingCell.loadingBar.frame.size.width)
                 self.recordingCellLoadingBarWidth = Double(self.recordingCell.loadingBar.frame.size.width)
                 
-                self.recordingCell.durationLabel.text? = "00:\(self.tempDuration)"
+                self.recordingCell.durationLabel.text? = self.timeString(time: TimeInterval(self.tempDuration))
                 
             }, completion: nil)
         } else {
@@ -378,11 +393,8 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
                 self.recordingCell.loadingBar.frame.size.width = self.recordingCell.loadingBar.frame.size.width + CGFloat(self.loadingBar)
                 self.recordingCell.imageViewFrame.layer.position.x =  self.recordingCell.loadingBar.frame.size.width + 7
                 self.recordingCellLoadingBarWidth = Double(self.recordingCell.loadingBar.frame.size.width)
-                if self.tempDuration < 10 {
-                    self.recordingCell.durationLabel.text? = "00:0\(self.tempDuration)"
-                } else {
-                    self.recordingCell.durationLabel.text? = "00:\(self.tempDuration)"
-                }
+
+                self.recordingCell.durationLabel.text? = self.timeString(time: TimeInterval(self.tempDuration))
             }, completion: nil)
         }
         
@@ -398,13 +410,8 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
             
             let deadlineTime = DispatchTime.now() + .seconds(3)
             DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-                var temp = "00:00"
-                if self.duration == 20 {
-                    temp = "00:\(self.duration)"
-                } else {
-                    temp = "00:0\(self.duration)"
-                }
-                self.recordingCell.durationLabel.text? = temp
+
+                self.recordingCell.durationLabel.text = self.timeString(time: TimeInterval(self.duration))
                 self.recordingCell.loadingBar.frame.size.width = 0.0
                 self.recordingCell.imageViewFrame.layer.position.x = 7.0
                 self.recordingCell.playPauseBtn.setImage(self.playBtn, for: .normal)

@@ -8,6 +8,8 @@
 
 import UIKit
 import CoreData
+import Firebase
+import SVProgressHUD
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,6 +19,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        FirebaseApp.configure()
+        SVProgressHUD.setDefaultStyle(.dark)
+        print("Bound Size Height: \(UIScreen.main.bounds.size.height)\n")
+        print("Native Scale: \(UIScreen.main.nativeScale)\n")
+        print("Scale: \(UIScreen.main.scale)\n")
         return true
     }
 
