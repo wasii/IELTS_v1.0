@@ -115,7 +115,7 @@ class RecordingScreenViewController: UIViewController, AVAudioRecorderDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.rowHeight = 20
+        tableView.rowHeight = 25.0
         speechSynthesizer.delegate = self
 //        speechRecognizer?.delegate = self
         
@@ -170,6 +170,7 @@ class RecordingScreenViewController: UIViewController, AVAudioRecorderDelegate, 
             nextQuesBtn.alpha = 0.5
             nextQuesBtn.isEnabled = false
             popUpView.isHidden = false
+            addFrequencies()
             return
         }
         if recordingStart == 0 {
@@ -295,11 +296,7 @@ class RecordingScreenViewController: UIViewController, AVAudioRecorderDelegate, 
         
         recordBtn.isEnabled = false
         updateSoundWaves.invalidate()
-        if globalIndex == (data["topics"] as! Array<String>).count {
-            noteFrequencies.append(currentFrequency)
-            finishRecording(true)
-            return
-        }
+        
         
         if insertFirstItem {
             noteFrequencies.append(currentFrequency)
@@ -310,6 +307,11 @@ class RecordingScreenViewController: UIViewController, AVAudioRecorderDelegate, 
             } else {
                 noteFrequencies.append(currentFrequency)
             }
+        }
+        if globalIndex == (data["topics"] as! Array<String>).count {
+            noteFrequencies.append(currentFrequency)
+            finishRecording(true)
+            return
         }
         if !part2Initialize {
             noteFrequencies.append(currentFrequency)
@@ -338,29 +340,30 @@ class RecordingScreenViewController: UIViewController, AVAudioRecorderDelegate, 
     
     @objc func timerAction() {
         recordingTimer = recordingTimer + 1
-//        if part2 {
-//            if part2Initialize {
-//                part2Initialize = false
-//                startRecordingTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(timerAction), userInfo: nil, repeats: true)
-//            }
-//            if recordingTimer > 60 {
-//
-//                timerImageView.isHidden = false
-//                let timer = recordingTimer - 60
-//                if timer >= 10 {
-//                    countdownTimer.text = "01:\(timer)"
-//                } else {
-//                    countdownTimer.text = "01:0\(timer)"
-//                }
+        if part2 {
+            if part2Initialize {
+                part2Initialize = false
+                startRecordingTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(timerAction), userInfo: nil, repeats: true)
+            }
+            if recordingTimer < 60 {
+
+                timerImageView.isHidden = false
+                let timer = recordingTimer - 60
+                if timer >= 10 {
+                    countdownTimer.text = "01:\(timer)"
+                } else {
+                    countdownTimer.text = "01:0\(timer)"
+                }
 //                return
-//            } else {
-//                part2 = false
-//                loadRecordingUI()
-//                callTextToSpeech = Timer(timeInterval: TimeInterval(recordingTimer), target: self, selector: #selector(readSentence), userInfo: nil, repeats: true)
-//                updateSoundWaves = Timer.scheduledTimer(timeInterval: 0.009, target: self, selector: #selector(refreshAudioView(_:)), userInfo: nil, repeats: true)
-//                return
-//            }
-//        }
+            } else {
+                recordingTimer = 0
+                part2 = false
+                loadRecordingUI()
+                callTextToSpeech = Timer(timeInterval: TimeInterval(recordingTimer), target: self, selector: #selector(readSentence), userInfo: nil, repeats: true)
+                updateSoundWaves = Timer.scheduledTimer(timeInterval: 0.009, target: self, selector: #selector(refreshAudioView(_:)), userInfo: nil, repeats: true)
+                
+            }
+        }
         
 //        if recordingTimer < 0 {
 //            if recordingTimer >= 10 {
@@ -489,6 +492,7 @@ class RecordingScreenViewController: UIViewController, AVAudioRecorderDelegate, 
     
     
     func timeString(time: TimeInterval) -> String {
+        self.countdownTimer.textColor = UIColor.white
         let hours = Int(time) / 36000
         let minutes = Int(time) / 60 % 60
         let seconds = Int(time) % 60
@@ -518,6 +522,12 @@ extension RecordingScreenViewController : UITableViewDelegate, UITableViewDataSo
         } else {
             return tableViewReloader
         }
+    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if part2 {
+            return 180
+        }
+        return 20
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RecordingScreenCell") as! RecordingScreenTableViewCell
@@ -551,6 +561,8 @@ extension RecordingScreenViewController : SFSpeechRecognizerDelegate, SFSpeechRe
                         catch let error as NSError {
                             print("Ooops! Something went wrong: \(error)")
                         }
+                        self.finishRecording(true)
+                        self.popUpView.isHidden = true
                         self.navigationController?.popViewController(animated: true)
                     })
                     alertController.addAction(okayBtn)
@@ -588,6 +600,8 @@ extension RecordingScreenViewController : SFSpeechRecognizerDelegate, SFSpeechRe
                         let path = self.getAudioDirectory().appendingPathComponent(self.data["title"] as! String)
                         try fileManager.removeItem(at: path)
                         self.uploadToFirebaseArray.removeAll()
+                        
+                        try AudioKit.stop()
                     }
                     catch let error as NSError {
                         print("Ooops! Something went wrong: \(error)")

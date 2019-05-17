@@ -9,29 +9,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Khoa IELTS/Controller/Home Screen/TableViewCell/HomeScreenTableViewCell.swift"
-            timestampString = "578996363.091754"
+            filePath = "Khoa IELTS/Controller/Recording Screen/RecordingScreenViewController.swift"
+            timestampString = "579765705.445858"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "20"
-            endingLineNumber = "20"
-            landmarkName = "awakeFromNib()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Khoa IELTS/Controller/Analytics/Recordings/RecordingsViewController.swift"
-            timestampString = "578996363.092077"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "407"
-            endingLineNumber = "407"
-            landmarkName = "animateView(_:)"
+            startingLineNumber = "501"
+            endingLineNumber = "501"
+            landmarkName = "timeString(time:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -41,61 +25,93 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Khoa IELTS/Controller/Analytics/Recordings/RecordingsViewController.swift"
-            timestampString = "578996363.092297"
+            filePath = "Khoa IELTS/Controller/Recording Screen/RecordingScreenViewController.swift"
+            timestampString = "579765705.446355"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "413"
-            endingLineNumber = "413"
-            landmarkName = "animateView(_:)"
+            startingLineNumber = "312"
+            endingLineNumber = "312"
+            landmarkName = "readSentence()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Khoa_IELTS.RecordingsViewController.animateView(__C.NSTimer) -&gt; ()"
-                  moduleName = "Khoa IELTS"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/office/Desktop/WASIQ/Khoa%20IELTS/Khoa%20IELTS/Khoa%20IELTS/Controller/Analytics/Recordings/RecordingsViewController.swift"
-                  timestampString = "578992732.8726079"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "416"
-                  endingLineNumber = "416"
-                  offsetFromSymbolStart = "3684">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #4 () -&gt; () in Khoa_IELTS.RecordingsViewController.animateView(__C.NSTimer) -&gt; ()"
-                  moduleName = "Khoa IELTS"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/office/Desktop/WASIQ/Khoa%20IELTS/Khoa%20IELTS/Khoa%20IELTS/Controller/Analytics/Recordings/RecordingsViewController.swift"
-                  timestampString = "578992732.87493"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "417"
-                  endingLineNumber = "417"
-                  offsetFromSymbolStart = "136">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Khoa IELTS/Controller/Analytics/Recordings/RecordingsViewController.swift"
-            timestampString = "578996363.0923589"
+            filePath = "Khoa IELTS/Controller/Recording Screen/RecordingScreenViewController.swift"
+            timestampString = "579765705.446671"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "414"
-            endingLineNumber = "414"
-            landmarkName = "animateView(_:)"
+            startingLineNumber = "308"
+            endingLineNumber = "308"
+            landmarkName = "readSentence()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Khoa IELTS/Controller/Recording Screen/RecordingScreenViewController.swift"
+            timestampString = "579765705.446981"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "317"
+            endingLineNumber = "317"
+            landmarkName = "readSentence()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Khoa IELTS/Controller/Recording Screen/RecordingScreenViewController.swift"
+            timestampString = "579765705.447284"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "301"
+            endingLineNumber = "301"
+            landmarkName = "readSentence()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Khoa IELTS/Controller/Recording Screen/RecordingScreenViewController.swift"
+            timestampString = "579765705.447585"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "305"
+            endingLineNumber = "305"
+            landmarkName = "readSentence()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Khoa IELTS/Controller/Recording Screen/RecordingScreenViewController.swift"
+            timestampString = "579765705.4478821"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "393"
+            endingLineNumber = "393"
+            landmarkName = "addFrequencies()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
