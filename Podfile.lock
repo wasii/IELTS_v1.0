@@ -78,6 +78,9 @@ PODS:
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.2.1)
   - leveldb-library (1.20)
+  - MarqueeLabel (3.2.1):
+    - MarqueeLabel/ObjC (= 3.2.1)
+  - MarqueeLabel/ObjC (3.2.1)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
@@ -98,6 +101,7 @@ DEPENDENCIES:
   - Firebase/Core
   - Firebase/Database
   - Firebase/Storage
+  - MarqueeLabel
   - PieCharts
   - PKHUD (~> 5.0)
   - SVProgressHUD
@@ -120,6 +124,7 @@ SPEC REPOS:
     - GoogleUtilities
     - GTMSessionFetcher
     - leveldb-library
+    - MarqueeLabel
     - nanopb
     - PieCharts
     - PKHUD
@@ -142,6 +147,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 6481e6318c5fcabaaa8513ef8120f329055d7c10
   GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
+  MarqueeLabel: 2daf039bf916937c8a4c9adfc13577cc5e51b4ce
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   PieCharts: 30e50dfa7dc19e5b84e9878d32089673ef5d0453
   PKHUD: 4e6162c4c39ac367c6934e9855c6b4762ee16256
@@ -149,6 +155,6 @@ SPEC CHECKSUMS:
   SwiftSiriWaveformView: baa04ed2089e854af00ea54c38a7700ca43d7ae0
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
 
-PODFILE CHECKSUM: b9f0459f77f4ce3147da7b0fc11954a8362aee56
+PODFILE CHECKSUM: cf7202c9d3e7e9295a8278d08edd8f5f0f2a850f
 
 COCOAPODS: 1.5.3
