@@ -39,6 +39,7 @@ class RecordingsViewController: UIViewController {
     var tempDuration = 0
     var filesCount = 0
     
+    var isPlayingAudio = false
     var sections = [RecordingSections]()
     @IBOutlet weak var tableView: UITableView!
     
@@ -178,7 +179,6 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RecordingsCell") as! RecordingsTableViewCell
 
-        var cellduration = "00:"
         let data = sections[indexPath.section].files[indexPath.row] as! [String: AnyObject]
         cell.headingLabel.text = sections[indexPath.section].folderName
         cell.subHeadingLabel.text = data["fileName"] as? String
@@ -225,7 +225,7 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
             cell.loadingBar.frame.size.width = 0.0
             cell.imageViewFrame.layer.position.x = 7.0
             cell.playPauseBtn.setImage(self.playBtn, for: .normal)
-            let temp = timeString(time: TimeInterval(duration!))
+            
             cell.durationLabel.text = timeString(time: TimeInterval(duration!))
         }
         cell.playPauseBtn.tag = indexPath.row
@@ -242,6 +242,7 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
+    
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         switch editingStyle {
         case .delete:
@@ -251,7 +252,13 @@ extension RecordingsViewController : UITableViewDelegate, UITableViewDataSource 
             let fileManager = FileManager.default
             
             do {
+                if audioPlayer.isPlaying {
+                    audioPlayer.pause()
+                    terminateTimer()
+                    pauseAnimateView()
+                }
                 try fileManager.removeItem(at: fileLocation)
+                
                 sections.removeAll()
                 self.getFoldersName()
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
